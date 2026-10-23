@@ -1,9 +1,12 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
-    "name": "hello-world",
-    "version-string": "0.0.1",
+    "name": "dialogue-camera-toggle",
+    "version-string": "0.5.1.0",
     "dependencies": [
-      "commonlibsse-ng",
-      "simpleini"
-    ]
+      "simpleini",
+      "spdlog",
+      "rapidcsv",
+      "directxtk"
+    ],
+    "builtin-baseline": "ee12231b20c95013c6638d845d04c91559a1d1ff"
 }
