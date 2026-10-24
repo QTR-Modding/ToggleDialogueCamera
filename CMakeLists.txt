@@ -10,7 +10,7 @@ if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/extern/CommonLibSSE/CMakeLists.txt")
 endif()
 
 # Set your project name. This will be the name of your SKSE .dll file.
-project(DialogueCameraToggle VERSION 0.5.1.0 LANGUAGES CXX)
+project(DialogueCameraToggle VERSION 0.5.1.0 LANGUAGES CXX RC)
 
 
 
@@ -51,7 +51,8 @@ set(BUILD_TESTS OFF CACHE BOOL " " FORCE)
 add_subdirectory(extern/CommonLibSSE ${CMAKE_CURRENT_BINARY_DIR}/_deps/clib-build)
 get_target_property(COMMONLIB_SRC_DIR CommonLibSSE SOURCE_DIR)
 include(${COMMONLIB_SRC_DIR}/cmake/CommonLibSSE.cmake)
-add_commonlibsse_plugin(${PROJECT_NAME} AUTHOR "Quantumyilmaz" SOURCES plugin.cpp) # <--- specifies plugin.cpp
+configure_file(cmake/version.rc.in "${CMAKE_CURRENT_BINARY_DIR}/version.rc" @ONLY)
+add_commonlibsse_plugin(${PROJECT_NAME} AUTHOR "Quantumyilmaz" SOURCES plugin.cpp "${CMAKE_CURRENT_BINARY_DIR}/version.rc")
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23) # <--- use C++23 standard
 target_precompile_headers(${PROJECT_NAME} PRIVATE PCH.h) # <--- PCH.h is required!
 
