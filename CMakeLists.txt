@@ -5,8 +5,12 @@ set(steam_mods_output true)
 # If you use CMake features from higher versions, update this to match.
 cmake_minimum_required(VERSION 3.21)
 
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/extern/CommonLibSSE/CMakeLists.txt")
+    message(FATAL_ERROR "Initialize CommonLibVR-MIT with git submodule update --init --recursive")
+endif()
+
 # Set your project name. This will be the name of your SKSE .dll file.
-project(DialogueCameraToggle VERSION 0.4 LANGUAGES CXX)
+project(DialogueCameraToggle VERSION 0.5.1.0 LANGUAGES CXX)
 
 
 
@@ -40,10 +44,21 @@ endif()
 # set(OUTPUT_FOLDER "C:/path/to/any/folder")
 
 # Setup your SKSE plugin as an SKSE plugin!
-find_package(CommonLibSSE CONFIG REQUIRED)
-add_commonlibsse_plugin(${PROJECT_NAME} SOURCES plugin.cpp) # <--- specifies plugin.cpp
+set(ENABLE_SKYRIM_SE ON CACHE BOOL " " FORCE)
+set(ENABLE_SKYRIM_AE ON CACHE BOOL " " FORCE)
+set(ENABLE_SKYRIM_VR OFF CACHE BOOL " " FORCE)
+set(BUILD_TESTS OFF CACHE BOOL " " FORCE)
+add_subdirectory(extern/CommonLibSSE ${CMAKE_CURRENT_BINARY_DIR}/_deps/clib-build)
+get_target_property(COMMONLIB_SRC_DIR CommonLibSSE SOURCE_DIR)
+include(${COMMONLIB_SRC_DIR}/cmake/CommonLibSSE.cmake)
+add_commonlibsse_plugin(${PROJECT_NAME} AUTHOR "Quantumyilmaz" SOURCES plugin.cpp) # <--- specifies plugin.cpp
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23) # <--- use C++23 standard
 target_precompile_headers(${PROJECT_NAME} PRIVATE PCH.h) # <--- PCH.h is required!
+
+if(MSVC)
+    target_link_options(${PROJECT_NAME} PRIVATE
+        "$<$<CONFIG:RelWithDebInfo>:/OPT:REF;/OPT:ICF;/INCREMENTAL:NO>")
+endif()
 
 # When your SKSE .dll is compiled, this will automatically copy the .dll into your mods folder.
 # Only works if you configure DEPLOY_ROOT above (or set the SKYRIM_MODS_FOLDER environment variable)
@@ -64,8 +79,8 @@ if(DEFINED OUTPUT_FOLDER)
         VERBATIM
     )
 
-    # If you perform a "Debug" build, also copy .pdb file (for debug symbols)
-    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    # Also copy matching debug symbols for Debug and RelWithDebInfo builds.
+    if(CMAKE_BUILD_TYPE MATCHES "^(Debug|RelWithDebInfo)$")
         add_custom_command(
             TARGET "${PROJECT_NAME}"
             POST_BUILD
