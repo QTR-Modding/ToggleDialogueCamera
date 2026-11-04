@@ -4,10 +4,9 @@ Mod page: https://www.nexusmods.com/skyrimspecialedition/mods/97280
 
 Started out using the template of mrowr purr: https://github.com/SkyrimScripting/SKSE_Template_HelloWorld
 
-Build with an x64 Visual Studio developer shell, CMake, Ninja and vcpkg (`VCPKG_ROOT`):
+Set `COMMONLIB_SSE_FOLDER` to your local CommonLibVR-MIT source folder and `VCPKG_ROOT` to your vcpkg folder. Build with an x64 Visual Studio developer shell, CMake and Ninja:
 
 ```text
-git submodule update --init --recursive
 cmake --preset relwithdebuginfo
 cmake --build build/relwithdebuginfo --target DialogueCameraToggle
 ```
